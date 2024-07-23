@@ -35,15 +35,18 @@ bot.command('subscribe', async (ctx) => {
         }
     });
 });
-let lat=0,long=0
+
 bot.on('location', async (ctx) => {
     const chatId = ctx.message.chat.id;
-     lat=ctx.message.location.latitude;
-     long=ctx.message.location.longitude;
+    const lat = ctx.message.location.latitude;
+    const long = ctx.message.location.longitude;
 
     // Save user location to the database
+    await User.findOneAndUpdate({ telegramId: chatId }, { latitude: lat, longitude: long });
+
     ctx.reply('Location received! You will now get weather updates based on your location.');
 });
+
 bot.command('unsubscribe', async (ctx) => {
     const chatId = ctx.message.chat.id;
     await User.findOneAndUpdate({ telegramId: chatId }, { subscribed: false });
@@ -53,17 +56,19 @@ bot.command('unsubscribe', async (ctx) => {
 const sendWeatherUpdates = async () => {
     const users = await User.find({ subscribed: true });
     for (const user of users) {
-        const chatId = user.telegramId;
-        const weather = await axios.get(`https://api.openweathermap.org/data/2.5/weather?lat=${lat}&lon=${long}&appid=${process.env.WEATHER_API_KEY}&units=metric`);
-        const desc=weather.data.weather[0].description;
-        const temp=weather.data.main.temp;
-        const feel=weather.data.main.feels_like;
-        bot.telegram.sendMessage(chatId, `Today's weather: ${desc} Temperature: ${temp.toFixed(2)}°C, Feels like: ${feel.toFixed(2)}°C`);
+        if (user.latitude && user.longitude) {
+            const weather = await axios.get(`https://api.openweathermap.org/data/2.5/weather?lat=${user.latitude}&lon=${user.longitude}&appid=${process.env.WEATHER_API_KEY}&units=metric`);
+            const desc = weather.data.weather[0].description;
+            const temp = weather.data.main.temp;
+            const feel = weather.data.main.feels_like;
+            bot.telegram.sendMessage(user.telegramId, `Today's weather: ${desc}. Temperature: ${temp.toFixed(2)}°C, Feels like: ${feel.toFixed(2)}°C`);
+        } else {
+            bot.telegram.sendMessage(user.telegramId, 'Please share your location to receive weather updates.');
+        }
     }
 };
-setInterval(sendWeatherUpdates,60000);
 
-
-
+sendWeatherUpdates();
+setInterval(sendWeatherUpdates,60000); // Send updates every 24 hours
 
 module.exports = bot;
