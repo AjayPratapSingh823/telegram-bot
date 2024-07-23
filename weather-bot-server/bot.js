@@ -62,7 +62,7 @@ const sendWeatherUpdates = async () => {
     }
 };
 sendWeatherUpdates();
-setInterval(sendWeatherUpdates, 1);
+
 
 
 
