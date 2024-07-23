@@ -61,7 +61,7 @@ const sendWeatherUpdates = async () => {
         bot.telegram.sendMessage(chatId, `Today's weather: ${desc} Temperature: ${temp.toFixed(2)}°C, Feels like: ${feel.toFixed(2)}°C`);
     }
 };
-setInterval(sendWeatherUpdates,20);
+setInterval(sendWeatherUpdates,60000);
 
 
 
