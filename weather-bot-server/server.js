@@ -16,7 +16,7 @@ const app = express();
 connectDB();
 
 const corsOptions = {
-    origin: 'http://localhost:3000', // Your frontend URL
+    origin: 'https://lustrous-flan-be902d.netlify.app/', // Your frontend URL
     credentials: true // Allow credentials (cookies, authorization headers, etc.)
 };
 app.use(cors(corsOptions));
