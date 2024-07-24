@@ -7,7 +7,7 @@ router.get('/google', passport.authenticate('google', { scope: ['profile', 'emai
 router.get('/google/callback',
     passport.authenticate('google', { failureRedirect: '/' }),
     (req, res) => {
-        res.redirect('https://669f9d346823e4214292839e--stellular-sprite-ea61e0.netlify.app/dashboard');
+        res.redirect('https://lustrous-flan-be902d.netlify.app/dashboard');
     }
 );
 
